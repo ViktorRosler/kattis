@@ -1,10 +1,6 @@
-
 #include <bits/stdc++.h>
 
-
 using namespace std;
-
-
 
 vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,
                     103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,
@@ -40,3 +36,63 @@ vector<int> primes = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73
                     3109,3119,3121,3137,3163,3167,3169,3181,3187,3191,
                     3203,3209,3217,3221,3229,3251,3253,3257,3259,3271,3299,
                     3301,3307,3313,3319,3323,3329,3331,3343,3347,3359,3361,3371,3373,3389,3391};
+
+
+int is_prime(int n) {
+    // cout << "is_prime: " << n << endl;
+    if (n == 0 || n == 1)
+        return 0;
+    for (int i{0}; i<primes.size(); ++i) {
+        if (n == primes[i])
+            return 1;
+        if (n % primes[i] == 0)
+            return 0;
+    }
+    return 1;
+}
+
+
+int main() 
+{
+    int cases;
+    cin >> cases;
+
+    for (int i{0}; i<cases; ++i) {
+        string line;
+        cin >> line;
+
+        int cnt = 0;
+        set<string> todo = {line};
+        set<int> perms = {stoi(string(1,line[0]))};
+        for (int j{1}; j<line.length(); ++j) {
+            swap(line[0], line[j]);
+            todo.insert(line);
+            perms.insert(stoi(string(1,line[0])));
+            swap(line[j], line[0]);
+        }
+
+        for (int j{1}; j<line.length(); ++j) {
+            set<string> new_todo;
+            for (auto iter = todo.begin(); iter != todo.end(); ++iter) {
+                string s = *iter;
+                new_todo.insert(s);
+                perms.insert(stoi(s.substr(0,j+1)));
+                for (int k{j+1}; k<line.length(); ++k) {
+                    swap(s[j], s[k]);
+                    new_todo.insert(s);
+                    perms.insert(stoi(s.substr(0,j+1)));
+                    swap(s[k], s[j]);
+                }
+            }
+            todo = new_todo;
+        }
+
+        for (auto iter = perms.begin(); iter != perms.end(); ++iter) {
+            cnt += is_prime(*iter);
+        }
+
+        cout << cnt << endl;
+
+    }
+
+}
